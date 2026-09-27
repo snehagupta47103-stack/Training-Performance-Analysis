@@ -1,350 +1,517 @@
-# 📊 Assessment Performance Analysis — Excel & SQL
+# 📊 Training Performance Analysis — Excel & SQL & Python
 
 > **A practical Data Analytics project demonstrating data cleaning, data enrichment, assessment analysis, Excel reporting, and relational database design using Excel and SQL.**
 
 ---
 
-## 📌 Project Overview
+## 👩‍💻 Project Information
 
-This project focuses on analyzing assessment performance across different technical and business-related courses.
-
-The project combines **Microsoft Excel** and **SQL** to demonstrate an end-to-end data analytics workflow — starting from raw assessment data and progressing toward cleaned, structured, and analysis-ready information.
-
-### 🎯 Project Objectives
-
-- Clean and organize assessment data
-- Identify and handle duplicate records
-- Enrich data using course reference information
-- Create derived analytical fields
-- Summarize assessment performance
-- Build a relational SQL database
-- Establish relationships using primary and foreign keys
-- Prepare data for further business analysis
+**Student Name:** Sneha Gupta  
+**Project:** Training Performance Analysis    
+**Course:** Data Analysis  
+**Tools Used:** Microsoft Excel, MySQL, Python, Jupyter Notebook  
 
 ---
 
-# 📁 Project Files
+## 🎯 Business Objective
 
-| File | Description |
-|---|---|
-| `analysis.xlsx` | Excel-based data cleaning, lookup, analysis and summary workbook |
-| `setup(1).sql` | SQL database and table creation script |
-| `README.md` | Project documentation |
+The objective of this project is to analyze training assessment performance and answer the following business questions:
 
----
+1. Which course needs the most academic support?
+2. How does performance differ across batches?
 
-# 📗 Excel Analysis
-
-The Excel workbook is designed to demonstrate a structured data-analysis workflow.
-
-## 📑 Workbook Structure
-
-### 1. Raw Sheet
-
-Contains the assessment dataset used as the starting point for the analysis.
-
-The assessment information includes:
-
-- Assessment ID
-- Month
-- Course ID
-- Batch
-- Score
-- Attendance Percentage
+The analysis uses assessment scores, attendance percentages, courses, departments, months, and batches.
 
 ---
 
-### 2. Lookup Sheet
+# 📁 Dataset
 
-Contains the course reference information used to enrich the assessment dataset.
+Two CSV files were used:
 
-The course mapping includes:
+- `assessments.csv` — Assessment/fact data
+- `courses.csv` — Course lookup data
 
-| Course ID | Course | Department |
+### Dataset Structure
+
+| Column | Type | Description |
 |---|---|---|
-| C1 | Excel | Business |
-| C2 | Power BI | Business |
-| C3 | SQL | Technology |
-| C4 | Python | Technology |
+| assessment_id | Integer | Unique assessment identifier |
+| month | Text | Assessment month: Jan, Feb, Mar |
+| course_id | Text | Course identifier |
+| batch | Text | Training batch |
+| score | Numeric | Assessment score |
+| attendance_pct | Numeric | Attendance percentage |
+| course | Text | Course name |
+| department | Text | Business or Technology |
+
+### Data Rules
+
+- The original assessment dataset contained **13 rows**.
+- One exact duplicate record was present.
+- After duplicate removal, **12 unique records** remained.
+- `course_id` was used as the lookup/join key.
+- `pass_flag = 1` when `score >= 50`; otherwise `pass_flag = 0`.
+- A score of exactly 50 is considered a pass.
+- Pass rate = Passing Assessments ÷ Total Assessments.
 
 ---
 
-### 3. Clean Sheet
+# 📗 Task 1 — Excel Data Analysis
 
-The cleaned dataset demonstrates practical data-preparation techniques, including:
+## 📌 Objective
 
-- Duplicate identification and handling
-- Course information lookup
-- Department enrichment
-- Creation of derived fields
-- Preparation of data for analysis
+The Excel analysis was performed to clean the assessment data, retrieve department information, identify passing assessments, and summarize performance using formulas, PivotTables, and charts.
 
-### 🔎 Excel Functions & Techniques
+## 📄 Excel Workbook Structure
 
-- `XLOOKUP`
-- Data Cleaning
-- Duplicate Handling
-- Derived Fields
-- Pivot Tables
-- Data Aggregation
-- Summary Analysis
+The workbook contains four sheets:
 
----
+### 1. Raw
+Contains the original assessment dataset with all **13 rows**, including the intentional duplicate.
 
-### 4. Summary Sheet
+### 2. Lookup
+Contains the course lookup table with:
 
-The summary section is used to organize the cleaned information into meaningful analytical views.
+- Course ID
+- Course
+- Department
 
-It supports analysis of:
+### 3. Clean
+Contains the cleaned dataset after removing the exact duplicate.
 
-- Assessment scores
-- Monthly performance
-- Course performance
-- Department-level performance
-- Batch-level results
-- Pass/flag classification
+The Clean sheet contains **12 unique records**.
 
----
+The department was retrieved using the `XLOOKUP` function.
 
-# 🗄️ SQL Database Project
+```excel
+=XLOOKUP(C4,Lookup!$A$2:$A$5,Lookup!$C$2:$C$5)
+```
 
-The SQL component converts the assessment information into a structured relational database.
-
-## 🏗️ Database
-
-The SQL script creates the database:
-
-# 🗄️ SQL Database Structure
-
-The database contains two main tables:
-
-## `courses`
-
-The `courses` table stores course master information.
-
-| Column | Description |
-|---|---|
-| `course_id` | Unique course identifier |
-| `course` | Course name |
-| `department` | Department/category of the course |
-
-## `assesments`
-
-The `assesments` table stores assessment-level information.
-
-| Column | Description |
-|---|---|
-| `assesment_id` | Unique assessment identifier |
-| `month` | Assessment month |
-| `course_id` | Course reference ID |
-| `batch` | Batch/session |
-| `score` | Assessment score |
-| `attendance_pct` | Attendance percentage |
-
----
-
-# 🔗 Database Relationship
-
-The two tables are connected using `course_id`.
-
-```text
-┌─────────────────────────┐
-│        courses          │
-├─────────────────────────┤
-│ course_id (PK)          │
-│ course                  │
-│ department              │
-└────────────┬────────────┘
-             │
-             │ course_id
-             │
-             ▼
-┌─────────────────────────┐
-│       assesments        │
-├─────────────────────────┤
-│ assesment_id (PK)       │
-│ month                   │
-│ course_id (FK)          │
-│ batch                   │
-│ score                   │
-│ attendance_pct          │
-└─────────────────────────┘
+The pass flag was created using:
+```excel
+=IF(E4>=50,1,0)
 ```
 
 ---
 
-## 🔗 Relationship
+### 4. Summary
 
-**Relationship:**
+The Summary sheet contains batch-wise passing assessment counts using `COUNTIFS`.
 
-`courses.course_id → assesments.course_id`
-
-Here, `course_id` acts as the **Primary Key (PK)** in the `courses` table and as a **Foreign Key (FK)** in the `assesments` table.
-
----
-
-# 🧠 SQL Concepts Demonstrated
-
-The SQL project demonstrates the following concepts:
-
-- `CREATE DATABASE`
-- `USE`
-- `CREATE TABLE`
-- `INSERT INTO`
-- Primary Keys
-- Foreign Keys
-- `NOT NULL` constraints
-- `AUTO_INCREMENT`
-- Relational Database Design
-- Table Relationships
-
-The `courses` table is created as the reference table, while the `assesments` table stores assessment records connected through the `course_id` foreign key.
+| Batch   | Passing Assessments |
+|---------|---------------------|
+| Morning | 3                   |
+| Evening | 3                   |
+| Weekend | 2                   |
 
 ---
 
-# 📊 Dataset Overview
+## 📊 Excel PivotTable Analysis
 
-The assessment dataset contains information across:
+A PivotTable was created to calculate the **average score by department and month**.
 
-- 📅 **3 Months:** January, February and March
-- 📚 **4 Courses:** Excel, Power BI, SQL and Python
-- 👥 **3 Batches:** Morning, Evening and Weekend
-- 📈 **Score**
-- 📊 **Attendance Percentage**
+The months were maintained in the required order:
 
-## 📚 Course Categories
+**Jan → Feb → Mar**
 
-### 💼 Business
+The Excel chart created from this PivotTable is titled:
 
-- Excel
-- Power BI
+**Average Score by Department and Month**
 
-### 💻 Technology
+<img width="752" height="449" alt="image" src="https://github.com/user-attachments/assets/15a9e6e9-e01f-4ec9-bfc6-adb1785986a3" />
 
-- SQL
+---
+
+# 🗄️ Task 2 — SQL Data Analysis
+
+## 📌 Objective
+
+SQL was used to create the training performance database, establish relationships between courses and assessments, and perform analytical queries.
+
+## 🛠️ SQL Environment
+
+**Database:** MySQL
+
+**SQL Files:**
+
+```text
+sql/
+├── setup.sql
+└── queries.sql
+```
+
+---
+
+## 🏗️ Database Setup
+
+The `setup.sql` file:
+
+- Creates the `training_performance` database.
+- Creates the `courses` table.
+- Creates the `assessments` table.
+- Defines primary keys.
+- Defines the foreign key relationship using `course_id`.
+- Inserts the supplied course and assessment data.
+
+The SQL assessment table contains the **12 unique assessment records** after removing the intentional duplicate.
+
+---
+
+## 🔍 SQL Analysis
+
+The `queries.sql` file contains the required analytical queries.
+
+### S2a — Average Score by Department
+
+The query calculates the average assessment score for each department.
+
+Results:
+
+| Department | Average Score |
+|------------|---------------|
+| Business   | 67.00         |
+| Technology | 56.00         |
+
+---
+
+### S2b — Courses with Average Score Below 60
+
+The query identifies courses whose average assessment score is below 60.
+
+| Course  | Average Score |
+|---------|---------------|
+| PowerBI | 53.33         |
+| Python  | 49.33         |
+
+---
+
+### S2c — Top 2 Batches by Average Score
+
+The query calculates average score by batch and returns the top two batches.
+
+| Batch   | Average Score |
+|---------|---------------|
+| Evening | 67.00         |
+| Morning | 61.25         |
+
+---
+
+## 🔗 SQL Data Validation
+
+A `LEFT JOIN` was also used to verify the relationship between assessment records and course information.
+
+The join confirmed that the assessment records could be matched with their corresponding course and department information.
+
+---
+
+# 🐍 Task 3 — Python Data Analysis
+
+## 📌 Objective
+
+Python was used for data loading, validation, cleaning, merging, derived-field creation, summary analysis, visualization, and output generation.
+
+## 🛠️ Python Tools Used
+
 - Python
+- Pandas
+- Matplotlib
+- Jupyter Notebook
 
----
-
-# 🔄 Data Analytics Workflow
+## 📄 Python File
 
 ```text
-Raw Data
-    ↓
-Data Cleaning
-    ↓
-Duplicate Handling
-    ↓
-Course Lookup
-    ↓
-Data Enrichment
-    ↓
-Derived Fields
-    ↓
-Summary & Pivot Analysis
-    ↓
-SQL Database Structure
-    ↓
-Analysis-Ready Data
+python/
+└── analysis.ipynb
 ```
----
-
-# 💡 Business Questions
-
-This project can be used to explore questions such as:
-
-1. Which course has higher assessment performance?
-2. How does performance change across different months?
-3. How do Business and Technology courses compare?
-4. How does attendance percentage relate to assessment scores?
-5. How do different batches perform?
-6. Which assessment records meet the defined passing condition?
-7. How can the same dataset be structured in both Excel and SQL?
-8. How can relational database design improve data organization?
 
 ---
 
-# 🛠️ Tools & Technologies
+## 🔄 Python Data Analysis Workflow
 
-## 📗 Microsoft Excel
+### 1. Load Data
 
-- Data Cleaning
-- XLOOKUP
-- Pivot Tables
-- Data Aggregation
-- Derived Fields
-- Summary Analysis
+The following datasets were loaded:
 
-## 🗄️ SQL / MySQL
+```text
+assessments.csv
+courses.csv
+```
 
-- Database Creation
-- Table Creation
-- Primary Keys
-- Foreign Keys
-- Data Insertion
-- Relational Database Design
+### 2. Validate Numeric Columns
+
+The `score` and `attendance_pct` columns were validated and converted to numeric data types.
+
+### 3. Remove Duplicate
+
+The exact duplicate assessment record was removed.
+
+```text
+Rows before duplicate removal: 13
+Rows after duplicate removal: 12
+```
+
+### 4. Merge Data
+
+A LEFT JOIN equivalent was performed using Pandas:
+
+```python
+merged_data = assesments.merge(
+    courses,
+    on="course_id",
+    how="left",
+    validate="many_to_one"
+)
+```
+The merged dataset was validated to ensure:
+
+- 12 rows remained.
+- No unmatched course IDs were present.
+
+### 5. Create Pass Flag
+
+The following rule was applied:
+
+```text
+Score >= 50 → Pass (1)
+Score < 50  → Fail (0)
+```
 
 ---
 
-# 📈 Skills Demonstrated
+# 📊 Python Department Summary
 
-This project demonstrates practical foundational skills in:
-
-- 🧹 Data Cleaning
-- 📋 Data Preparation
-- 🗂️ Data Organization
-- 🔎 Data Enrichment
-- 📊 Excel Analysis
-- 🗄️ SQL Database Design
-- 🔗 Relational Data Modeling
-- 📈 Data Aggregation
-- 🧠 Analytical Thinking
-- 💼 Business Question Formulation
+| Department | Assessments | Average Score | Pass Count | Pass Rate |
+|------------|-------------|---------------|------------|-----------|
+| Business   | 6           | 67.00         | 5          | 83.33%    |
+| Technology | 6           | 56.00         | 3          | 50.00%    |
 
 ---
+
+# 📉 Lowest Course Pass Rate
+
+The course-wise analysis identified **Python (C4)** as the course with the lowest pass rate.
+
+| Course | Average Score | Pass Rate |
+|--------|---------------|-----------|
+| Python | 49.33         | 33.33%    |
+
+This indicates that Python has the lowest passing proportion among the analyzed courses and therefore requires focused academic support.
+
+---
+
+# 📈 Python Monthly Average Score
+
+| Month | Average Score |
+|-------|---------------|
+| Jan   | 55.00         |
+| Feb   | 62.75         |
+| Mar   | 66.75         |
+
+The monthly average score increased from January to March.
+
+<img width="970" height="506" alt="Screenshot 2026-09-27 131003" src="https://github.com/user-attachments/assets/a709fa12-9906-40a1-8e27-6479027f23d4" />
+
+---
+
+# 📁 Python Output Files
+
+The Python analysis generates the following output files:
+
+```text
+outputs/
+├── clean_data.csv
+├── python_summary.csv
+└── python_chart.png
+```
+### `clean_data.csv`
+
+Contains the cleaned and merged 12-row dataset.
+
+### `python_summary.csv`
+
+Contains the department-level summary generated from Python.
+
+### `python_chart.png`
+
+Contains the monthly average score visualization.
+
+---
+
+# 📊 Key Findings
+
+### Finding 1 — Department Performance
+
+The Business department has an average score of **67.00**, while the Technology department has an average score of **56.00**.
+
+### Finding 2 — Course Performance
+
+Python has the lowest course pass rate at **33.33%**, with an average score of **49.33**.
+
+### Finding 3 — Monthly Performance
+
+The overall monthly average score increased from:
+
+**55.00 in January → 62.75 in February → 66.75 in March.**
+
+---
+
+# 🎯 Recommendation
+
+Based on the analyzed 12 unique assessment records, academic support should be prioritized for the **Python course**, particularly by reviewing difficult topics, providing additional practice, and monitoring future assessment performance.
+
+This recommendation is based on a small dataset of 12 unique assessment records, so further assessment data would be useful before making broader conclusions.
+
+---
+
+# 🔄 Cross-Tool Reconciliation
+
+The same clean dataset and metric definitions were used across Excel, SQL, and Python.
+
+A key aggregate confirmed across the tools is the **Technology department average score**:
+
+| Tool   | Technology Average Score |
+|--------|---------------------------|
+| Excel  | 56.00                     |
+| SQL    | 56.00                     |
+| Python | 56.00                     |
+
+The results are consistent across the completed modules.
+
+---
+
+# 📂 Project Structure
+```text
+data-analysis-set-C-YOUR-STUDENT-ID/
+│
+├── README.md
+│
+├── data/
+│   └── raw/
+│       ├── assessments.csv
+│       └── courses.csv
+│
+├── excel/
+│   └── analysis.xlsx
+│
+├── sql/
+│   ├── setup.sql
+│   └── queries.sql
+│
+├── python/
+│   └── analysis.ipynb
+│
+└── outputs/
+    ├── clean_data.csv
+    ├── python_summary.csv
+    ├── python_chart.png
+    └── excel_chart.png
+```
+
+---
+
+# ▶️ How to Run the Project
+
+## Excel
+
+Open:
+
+```text
+excel/analysis.xlsx
+```
+
+## SQL
+
+Run the files in this order:
+
+```text
+1. sql/setup.sql
+2. sql/queries.sql
+```
+
+## Python
+
+Open:
+
+```text
+python/analysis.ipynb
+```
+Run all notebook cells from top to bottom.
+
+The notebook performs data loading, validation, duplicate removal, merging, analysis, visualization, and output generation.
 
 ---
 
 # 🏆 Achievements
 
-- 📊 Successfully completed an end-to-end Data Analytics project using **Microsoft Excel and SQL**.
-- 🧹 Applied practical data cleaning and preparation techniques to transform raw assessment data into an analysis-ready dataset.
-- 🔎 Implemented **XLOOKUP, Pivot Tables, Data Aggregation and Derived Fields** in Excel.
-- 🗄️ Designed a relational SQL database using **Primary Keys, Foreign Keys and table relationships**.
-- 💡 Developed a structured approach to analyzing assessment performance and formulating business questions.
-- 📁 Created a portfolio-ready project demonstrating practical foundational **Data Analyst skills**.
+- Completed a practical **Excel Data Analysis** workflow.
+- Created an SQL database and performed analytical queries using **MySQL**.
+- Completed a **Python data analysis workflow** using Pandas and Matplotlib.
+- Performed data cleaning and duplicate removal.
+- Used lookup and join techniques to combine datasets.
+- Created analytical summaries and visualizations.
+- Generated reusable CSV outputs from the Python analysis.
+- Reconciled an aggregate result across Excel, SQL, and Python.
 
 ---
+
+# 🙏 Acknowledgement
+
+This project was completed as part of practical Data Analysis training.
+
+I would like to acknowledge the guidance and learning resources provided during the Data Analysis training for helping me understand and apply concepts related to:
+
+- Microsoft Excel
+- SQL and MySQL
+- Python
+- Pandas
+- Matplotlib
+- Data Cleaning
+- Data Analysis
+- Data Visualization
+
+---
+
+<div align="center">
 
 # 👩‍💻 Author
 
-## Sneha Gupta
+## <span style="color:#7B61A8;">Sneha Gupta</span>
 
-**Aspiring Data Analyst | Business Analyst**
+### <span style="color:#555555;">BBA Student | Aspiring Data Analyst</span>
 
-I am a BBA student developing practical skills in **Data Analytics, Business Analysis, Excel, SQL and Python**.
-
-I am interested in transforming raw data into structured information and meaningful insights. Through hands-on projects, I am building practical experience in **data cleaning, analysis, database design and analytical problem-solving**.
-
-### 💻 Technical Interests
-
-- Microsoft Excel
-- SQL
-- Python
-- Data Analytics
-- Business Analysis
-- Data Visualization
-- Database Management
-
-### 🎯 Career Goal
-
-To build a career in **Data Analytics and Business Analysis** and use data-driven approaches to understand business problems and support informed decision-making.
+📍 **Surat, Gujarat, India**
 
 ---
 
-### ⭐ Project Note
+### 🛠️ Skills
 
-> **From Raw Data → Clean Data → Structured Database → Analysis → Insights**
+<span style="color:#5B4B8A;">Excel</span> ·
+<span style="color:#5B4B8A;">SQL</span> ·
+<span style="color:#5B4B8A;">Python</span> ·
+<span style="color:#5B4B8A;">Data Analysis</span> ·
+<span style="color:#5B4B8A;">Data Handling</span> ·
+<span style="color:#5B4B8A;">Data Visualization</span>
 
-**Created by Sneha Gupta | Data Analytics Portfolio Project**
+### 🔗 GitHub
 
+<a href="https://github.com/snehagupta47103-stack">
+github.com/snehagupta47103-stack
+</a>
+
+</div>
+
+---
+
+## 📜 Authorship Declaration
+
+> All work in this repository is my own except where cited.
+
+<div align="center">
+
+### **Training Performance Analysis — Data Analysis**
+
+*Excel • SQL • Python*
+
+**Prepared by Sneha Gupta**
+
+</div>
